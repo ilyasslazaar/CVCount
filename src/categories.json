@@ -1,0 +1,23 @@
+{
+	"languages": ["c++ cpp cplusplus", "c", "java", "c#", "javascript js ecmascript", "php", "html", "css", "python", "sql", "ruby", "perl", "swift", "kotlin", "dart", "matlab", "go", "r", "matlab"],
+	"mobile": ["ios", "android"],
+	"technologies": ["jee javaenterpriseedition", "asp", ".net"],
+	"frameworks": ["django", "angularjs", "laravel", "symphony", "reactjs", "vuejs", "springboot", "rails", "ember", "backbone"],
+	"libraries": ["bootstrap", "jquery"],
+	"databases": ["sqlserver", "mysql", "postgresql", "mariadb", "oracle", "mongodb"],
+	"networking": [],
+	"design": ["photoshop", "sketch", "xd", "ui", "ux", "ilustrator"],
+	"operatingSystems": ["linux", "windows"],
+	"testing": [],
+	"servers": ["apache", "nginx", "nodejs", "lighttp"],
+	"projectManagment": ["scrum", "xp", "kanban", "scrumban"],
+	"dataScience": [""],
+	"cities": ["berkane", "oujda", "ahfir", "rabat", "casablanca"],
+	"countries": ["maroc", "france"],
+	"schools": ["ista", "est", "encj", "ensa", "ehei", "supmti"],
+	"humanLanguages": ["arabe", "francais", "anglais"],
+	"softwares": ["word", "excel"],
+	"ides": ["inteliij", "webstorm", "netbeans", "pycharm", "eclipse", "notepad++", "brackets", "visual studio", "atoms", "phpstorm"],
+	"modeling": ["uml", "merise"],
+	"ihm": ["swing", "awt", "javafx", "qt"]
+}
