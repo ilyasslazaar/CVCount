@@ -1,0 +1,42 @@
+{
+    "name": "CandidateSkill",
+    "fields": [
+        {
+            "fieldName": "count",
+            "fieldType": "Integer",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "skill",
+            "otherEntityRelationshipName": "candidateSkill",
+            "relationshipValidateRules": "required",
+            "relationshipName": "skill",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "candidate",
+            "otherEntityRelationshipName": "candidateSkill",
+            "relationshipValidateRules": "required",
+            "relationshipName": "candidate",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20190826100441",
+    "entityTableName": "candidate_skill",
+    "dto": "mapstruct",
+    "pagination": "no",
+    "service": "serviceClass",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": [
+        "filtragecv"
+    ],
+    "microserviceName": "filtragecv"
+}

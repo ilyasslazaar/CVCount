@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <!--
+        Added the constraints for entity Candidate.
+    -->
+    <changeSet id="20190826100436-2" author="jhipster">
+        
+        <addForeignKeyConstraint baseColumnNames="candidate_id"
+                                 baseTableName="candidate_city"
+                                 constraintName="fk_candidate_city_candidate_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="candidate"/>
+
+        <addForeignKeyConstraint baseColumnNames="city_id"
+                                 baseTableName="candidate_city"
+                                 constraintName="fk_candidate_city_city_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="city"/>
+        
+        <addForeignKeyConstraint baseColumnNames="candidate_id"
+                                 baseTableName="candidate_school"
+                                 constraintName="fk_candidate_school_candidate_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="candidate"/>
+
+        <addForeignKeyConstraint baseColumnNames="school_id"
+                                 baseTableName="candidate_school"
+                                 constraintName="fk_candidate_school_school_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="school"/>
+        
+    </changeSet>
+</databaseChangeLog>

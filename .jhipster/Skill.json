@@ -1,0 +1,51 @@
+{
+    "name": "Skill",
+    "fields": [
+        {
+            "fieldName": "name",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required",
+                "unique",
+                "minlength",
+                "maxlength"
+            ],
+            "fieldValidateRulesMinlength": 1,
+            "fieldValidateRulesMaxlength": 42
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "candidateSkill",
+            "otherEntityRelationshipName": "skill",
+            "relationshipName": "candidateSkill"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "category",
+            "otherEntityRelationshipName": "skill",
+            "relationshipValidateRules": "required",
+            "relationshipName": "category",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "skillSynonym",
+            "otherEntityRelationshipName": "skill",
+            "relationshipName": "skillSynonym"
+        }
+    ],
+    "changelogDate": "20190826100432",
+    "entityTableName": "skill",
+    "dto": "mapstruct",
+    "pagination": "no",
+    "service": "serviceClass",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": [
+        "filtragecv"
+    ],
+    "microserviceName": "filtragecv"
+}

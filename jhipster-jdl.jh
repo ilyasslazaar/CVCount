@@ -1,0 +1,64 @@
+application {
+  config {
+    baseName filtragecv
+    applicationType microservice
+    packageName io.novelis.filtragecv
+    authenticationType jwt
+    buildTool maven
+    databaseType sql
+    devDatabaseType h2Disk
+    prodDatabaseType mysql
+    serverPort 8081
+  }
+  entities *
+}
+entity Skill {
+	name String required unique minlength(1) maxlength(42)
+}
+entity Category {
+	name String required unique minlength(1) maxlength(42)
+}
+entity SkillSynonym {
+	name String required unique minlength(1) maxlength(42)
+}
+entity SchoolSynonym {
+	name String required unique minlength(1) maxlength(42)
+}
+entity Candidate {
+	fileName String required unique,
+	rejected Boolean required,
+	funcId Integer required unique,
+}
+entity School {
+	name String required unique minlength(1) maxlength(42)
+}
+entity Country {
+    name String required unique minlength(1) maxlength(42)
+}
+entity City {
+	name String required unique minlength(1) maxlength(42)
+}
+entity StopWord {
+	name String required unique minlength(1) maxlength(42)
+}
+entity CandidateSkill {
+	count Integer required
+}
+
+relationship ManyToOne {
+	City{country required} to Country{city},
+    SkillSynonym{skill required} to Skill{skillSynonym},
+    SchoolSynonym{school required} to School{schoolSynonym},
+    Skill{category required} to Category{skill},
+}
+relationship OneToMany {
+	Skill to CandidateSkill{skill required},
+	Candidate to CandidateSkill{candidate required},
+}
+relationship ManyToMany {
+	Candidate{city} to City{candidate},
+    Candidate{school} to School{candidate},
+}
+microservice * with filtragecv
+dto * with mapstruct
+service * with serviceClass

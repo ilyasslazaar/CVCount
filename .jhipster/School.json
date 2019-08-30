@@ -1,0 +1,45 @@
+{
+    "name": "School",
+    "fields": [
+        {
+            "fieldName": "name",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required",
+                "unique",
+                "minlength",
+                "maxlength"
+            ],
+            "fieldValidateRulesMinlength": 1,
+            "fieldValidateRulesMaxlength": 42
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "schoolSynonym",
+            "otherEntityRelationshipName": "school",
+            "relationshipName": "schoolSynonym"
+        },
+        {
+            "relationshipType": "many-to-many",
+            "otherEntityName": "candidate",
+            "otherEntityRelationshipName": "school",
+            "relationshipName": "candidate",
+            "otherEntityField": "id",
+            "ownerSide": false
+        }
+    ],
+    "changelogDate": "20190826100437",
+    "entityTableName": "school",
+    "dto": "mapstruct",
+    "pagination": "no",
+    "service": "serviceClass",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": [
+        "filtragecv"
+    ],
+    "microserviceName": "filtragecv"
+}

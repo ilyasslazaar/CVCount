@@ -1,0 +1,49 @@
+{
+  "generator-jhipster": {
+    "databaseType": "sql",
+    "devDatabaseType": "h2Disk",
+    "enableHibernateCache": true,
+    "enableSwaggerCodegen": false,
+    "enableTranslation": true,
+    "jhiPrefix": "jhi",
+    "languages": [
+      "en",
+      "fr"
+    ],
+    "messageBroker": false,
+    "nativeLanguage": "en",
+    "packageName": "io.novelis.filtragecv",
+    "packageFolder": "io/novelis/filtragecv",
+    "prodDatabaseType": "mysql",
+    "searchEngine": false,
+    "serviceDiscoveryType": "eureka",
+    "skipClient": true,
+    "testFrameworks": [],
+    "websocket": false,
+    "baseName": "filtragecv",
+    "applicationType": "microservice",
+    "authenticationType": "jwt",
+    "buildTool": "maven",
+    "serverPort": "8081",
+    "jhipsterVersion": "6.1.2",
+    "skipUserManagement": true,
+    "clientPackageManager": "npm",
+    "cacheProvider": "hazelcast",
+    "jwtSecretKey": "NGQ0MTc0MTA0ZmJkODFiMzQ2NjNlN2MzZDZiM2M5MmE1OTA4NDFhNzk4ZWFiZWU1MGMxNTZjNTk4YmU2NjI2OTIyMTRmOGZhYjEwMjAzODdmM2FjYzlhZWUxYjY2ODUxYWNjMGVhZTE2OGM4ZjFjMGVkZTg1MTFhYTMyZjg0MDg=",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": []
+  },
+  "entities": [
+    "Skill",
+    "Category",
+    "SkillSynonym",
+    "SchoolSynonym",
+    "Candidate",
+    "School",
+    "Country",
+    "City",
+    "StopWord",
+    "CandidateSkill"
+  ]
+}

@@ -1,0 +1,64 @@
+{
+    "name": "Candidate",
+    "fields": [
+        {
+            "fieldName": "fileName",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required",
+                "unique"
+            ]
+        },
+        {
+            "fieldName": "rejected",
+            "fieldType": "Boolean",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "funcId",
+            "fieldType": "Integer",
+            "fieldValidateRules": [
+                "required",
+                "unique"
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "candidateSkill",
+            "otherEntityRelationshipName": "candidate",
+            "relationshipName": "candidateSkill"
+        },
+        {
+            "relationshipType": "many-to-many",
+            "otherEntityName": "city",
+            "otherEntityRelationshipName": "candidate",
+            "relationshipName": "city",
+            "otherEntityField": "id",
+            "ownerSide": true
+        },
+        {
+            "relationshipType": "many-to-many",
+            "otherEntityName": "school",
+            "otherEntityRelationshipName": "candidate",
+            "relationshipName": "school",
+            "otherEntityField": "id",
+            "ownerSide": true
+        }
+    ],
+    "changelogDate": "20190826100436",
+    "entityTableName": "candidate",
+    "dto": "mapstruct",
+    "pagination": "no",
+    "service": "serviceClass",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": [
+        "filtragecv"
+    ],
+    "microserviceName": "filtragecv"
+}

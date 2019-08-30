@@ -1,0 +1,39 @@
+{
+    "name": "SkillSynonym",
+    "fields": [
+        {
+            "fieldName": "name",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required",
+                "unique",
+                "minlength",
+                "maxlength"
+            ],
+            "fieldValidateRulesMinlength": 1,
+            "fieldValidateRulesMaxlength": 42
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "skill",
+            "otherEntityRelationshipName": "skillSynonym",
+            "relationshipValidateRules": "required",
+            "relationshipName": "skill",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20190826100434",
+    "entityTableName": "skill_synonym",
+    "dto": "mapstruct",
+    "pagination": "no",
+    "service": "serviceClass",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": [
+        "filtragecv"
+    ],
+    "microserviceName": "filtragecv"
+}
