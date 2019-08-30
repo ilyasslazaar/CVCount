@@ -14,6 +14,12 @@ import java.util.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CandidateDTO implements Serializable {
 
+
+    /*
+    *
+    *
+    * thisjfds    tset commit  and push
+    * */
     private Long id;
 
     @NotNull
