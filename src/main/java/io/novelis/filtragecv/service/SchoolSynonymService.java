@@ -42,9 +42,10 @@ public class SchoolSynonymService {
     }
 
     /**
-     * Save a schoolSynonym.
+     * Save a schoolSynonym and deletes it if it exists in the skill table.
      *
      * @param schoolSynonymDTO the entity to save.
+     * @throws BadRequestException if the name of the schoolSynonym equals the name of a skill with a known category
      * @return the persisted entity.
      */
     public SchoolSynonymDTO save(SchoolSynonymDTO schoolSynonymDTO) {

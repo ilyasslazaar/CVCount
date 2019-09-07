@@ -40,9 +40,10 @@ public class StopWordService {
     }
 
     /**
-     * Save a stopWord.
+     * Save a stopWord and deletes it if it exists in the skill table.
      *
      * @param stopWordDTO the entity to save.
+     * @throws BadRequestException if there is a skill with a known category with the same name as the stopWord
      * @return the persisted entity.
      */
     public StopWordDTO save(StopWordDTO stopWordDTO) {

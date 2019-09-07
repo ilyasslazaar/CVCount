@@ -25,8 +25,6 @@ public class CandidateDTO implements Serializable {
     @NotNull
     private Integer funcId;
 
-    private Integer totalSkillsCount;
-
     private Integer score;
 
     @JsonIgnore
@@ -54,14 +52,6 @@ public class CandidateDTO implements Serializable {
 
     public void setCandidateSkills(Set<CandidateSkillDTO> candidateSkills) {
         this.candidateSkills = candidateSkills;
-    }
-
-    public Integer getTotalSkillsCount() {
-        return totalSkillsCount;
-    }
-
-    public void setTotalSkillsCount(Integer totalSkillsCount) {
-        this.totalSkillsCount = totalSkillsCount;
     }
 
     public List<Keyword> getKeywords() {

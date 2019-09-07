@@ -49,6 +49,8 @@ public class SchoolService {
 
     /**
      * Save a school.
+     * if a skill exist with that same name the school get added to the candidates that have that skill
+     * if that skill has an unknown category it gets deleted
      *
      * @param schoolDTO the entity to save.
      * @return the persisted entity.
@@ -66,6 +68,14 @@ public class SchoolService {
         }
         return schoolMapper.toDto(school);
     }
+
+    /**
+     * add the school to all the candidate that have that skill
+     *
+     * @param skill
+     * @param school
+     *
+     */
     private void addSchoolToCandidate(Skill skill, School school) {
         List<CandidateSkill> candidateSkills = candidateSkillRepository.getAllBySkill(skill);
         for(int i = 0; i < candidateSkills.size(); i++) {

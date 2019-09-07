@@ -34,7 +34,7 @@ public class SkillService {
     }
 
     /**
-     * Save a skill.
+     * Save a skill, if it already exist change its category.
      *
      * @param skillDTO the entity to save.
      * @return the persisted entity.

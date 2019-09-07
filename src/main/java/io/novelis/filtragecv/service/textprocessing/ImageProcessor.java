@@ -5,13 +5,12 @@ import io.novelis.filtragecv.web.rest.errors.TextExtractionException;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.awt.image.BufferedImage;
 import java.nio.file.Paths;
 
 public class ImageProcessor {
-    @Autowired
-    static ApplicationProperties applicationProperties;
     private BufferedImage img;
 
     public ImageProcessor(BufferedImage _img) {
@@ -20,8 +19,7 @@ public class ImageProcessor {
 
     private static Tesseract getTesseract() {
         Tesseract instance = new Tesseract();
-        instance.setDatapath(Paths.get(applicationProperties.getUploadDir())
-            .toAbsolutePath().normalize().toString());
+        instance.setDatapath(Paths.get("").toAbsolutePath().toString()+"\\tessdata");
         instance.setLanguage("fra");
         instance.setPageSegMode(1);
         instance.setTessVariable("N", "400");

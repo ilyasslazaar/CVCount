@@ -34,6 +34,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -61,15 +62,13 @@ public class CandidateService {
 
     private final CandidateMapper candidateMapper;
 
-    private TextProcessor textProcessor;
-
-    private final Path fileStorageLocation;
+    private FileStorage fileStorage;
 
     private final SkillMapper skillMapper;
 
     public CandidateService(CandidateRepository candidateRepository,
                             CandidateMapper candidateMapper,
-                            ApplicationProperties applicationProperties,
+                            FileStorage fileStorage,
                             SkillRepository skillRepository,
                             SchoolRepository schoolRepository,
                             CityRepository cityRepository,
@@ -85,21 +84,27 @@ public class CandidateService {
         this.stopWordRepository = stopWordRepository;
         this.skillSynonymRepository = skillSynonymRepository;
         this.schoolSynonymRepository = schoolSynonymRepository;
-        this.fileStorageLocation = Paths.get(applicationProperties.getUploadDir())
-            .toAbsolutePath().normalize();
         this.skillMapper = skillMapper;
-
-        try {
-            Files.createDirectories(this.fileStorageLocation);
-        } catch (Exception ex) {
-            throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", ex);
-        }
+        this.fileStorage = fileStorage;
     }
 
+    /**
+     * checks if priority is valid
+     *
+     * @param p
+     * @return
+     */
     private boolean inPriorityRange(int p) {
         return p >= 3 && p <= 7;
     }
 
+    /**
+     * gets list of candidate skills
+     *
+     * @param id of candidate
+     * @return list of candidate skills
+     * @throws EntityNotFoundException if candidate does not exist
+     */
     public List<SkillDTO> getSkills(Long id) {
         Optional<Candidate> candidate = candidateRepository.findById(id);
         if (!candidate.isPresent()) {
@@ -112,70 +117,55 @@ public class CandidateService {
             .collect(Collectors.toCollection(LinkedList::new));
     }
 
+    /**
+     * checks if parameters are valid to order the candidates
+     *
+     * @param keywords
+     * @param priorities
+     */
     private void validateParams(List<String> keywords, List<Integer> priorities) {
         if (keywords.size() != priorities.size()) {
             throw new BadRequestException("keywords size does not equal priorites size");
         }
         for (int i = 0; i < keywords.size(); i++) {
             if (!keywords.get(i).matches(".*[a-zA-Z]+.*")) {
-                throw new BadRequestException("keyword: "+ keywords.get(i) + " does not contain a letter");
-            } else if (!inPriorityRange(priorities.get(i))){
+                throw new BadRequestException("keyword: " + keywords.get(i) + " does not contain a letter");
+            } else if (!inPriorityRange(priorities.get(i))) {
                 throw new BadRequestException("priority: " + priorities.get(i) + " not in the [3, 7] range");
             }
         }
     }
 
+    /**
+     * gets candidate file
+     *
+     * @param fileName
+     * @return
+     */
+    public Resource getCandidateFile(String fileName) {
+        return fileStorage.loadFileAsResource(fileName);
+    }
+
+    /**
+     * @param keywords
+     * @param priorities
+     * @return list of not rejected candidates ordred based on the score they have
+     */
     public List<CandidateDTO> getCandidates(List<String> keywords, List<Integer> priorities) {
         if (keywords.size() == 0) {
             return findAll();
         }
         validateParams(keywords, priorities);
-        List<Candidate> candidates = candidateRepository.findAllWithEagerRelationships();
+        List<Candidate> candidates = candidateRepository.getCandidateByRejected(false);
         for (Candidate candidate :
             candidates) {
             candidate.calcScore(keywords, priorities);
-            if(candidate.getScore() == 0) {
+            if (candidate.getScore() == 0) {
                 candidates.remove(candidate);
             }
         }
         candidates.sort(Comparator.comparingInt(Candidate::getScore).reversed());
         return candidates.stream().map(candidateMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
-    }
-
-    private String getFileExtension(MultipartFile file) {
-        if (file.isEmpty()) {
-            throw new FileStorageException("Failed to store empty file");
-        }
-        String fileName = file.getOriginalFilename();
-        if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
-            return fileName.substring(fileName.lastIndexOf(".") + 1);
-        else return "";
-    }
-
-    private String storeFile(MultipartFile file, String fileExtension) {
-        String fileName = "" + new Date().getTime() + "." + fileExtension;
-        try {
-            // Copy file to the target location
-            Path targetLocation = this.fileStorageLocation.resolve(fileName);
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            return fileName;
-        } catch (IOException ex) {
-            throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
-        }
-    }
-
-    public Resource loadFileAsResource(String fileName) {
-        try {
-            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
-            if (resource.exists()) {
-                return resource;
-            } else {
-                throw new NotFoundException("File not found " + fileName);
-            }
-        } catch (MalformedURLException ex) {
-            throw new NotFoundException("File not found " + fileName, ex);
-        }
     }
 
     /**
@@ -191,27 +181,51 @@ public class CandidateService {
         return candidateMapper.toDto(candidate);
     }
 
-    public CandidateDTO save(MultipartFile cv, int funcId) {
-        String fileExtension = getFileExtension(cv);
-        if (!fileExtension.equals("pdf") && !fileExtension.equals("docx") && !fileExtension.equals("doc")) {
-            throw new FileStorageException("unrecognized file type :" + fileExtension);
-        }
-        String fileName = storeFile(cv, fileExtension);
-
-        String filePath = this.fileStorageLocation.resolve(fileName).normalize().toString();
-        if (fileExtension.equals("pdf")) {
-            textProcessor = new PdfProcessor(filePath);
-        } else {
-            textProcessor = new DocProcessor(filePath);
-        }
+    /**
+     * save a candidate
+     *
+     * @param cv
+     * @param funcId
+     * @return candidateDTO
+     * @throws FileStorageException if file extension not (pdf, doc, docx)
+     */
+    public CandidateDTO save(MultipartFile cv, Integer funcId) {
+        String fileName = fileStorage.storeFile(cv);
         Candidate candidate = new Candidate();
         candidate.setFuncId(funcId);
         candidate.setFileName(fileName);
-        addWordsToCandidate(textProcessor.getWords(), candidate);
+        addWordsToCandidate(fileStorage.getWords(), candidate);
         candidate = candidateRepository.save(candidate);
         return candidateMapper.toDto(candidate);
     }
 
+    public CandidateDTO update(Long id, MultipartFile cv, Integer funcId, Boolean rejected) {
+        Optional<Candidate> candidate = candidateRepository.findById(id);
+        if (!candidate.isPresent()) {
+            throw new EntityNotFoundException("cant find");
+        }
+        if (cv != null) {
+            String fileName = fileStorage.storeFile(cv);
+            candidate.get().setFileName(fileName);
+            fileStorage.deleteFile(candidate.get().getFileName());
+        }
+        if (funcId != null) {
+            candidate.get().setFuncId(funcId);
+        }
+        if (rejected != null) {
+            candidate.get().setRejected(rejected);
+        }
+        Candidate c = candidate.get();
+        c = candidateRepository.save(c);
+        return candidateMapper.toDto(c);
+    }
+
+    /**
+     * get words category and add them to the candidate with their occurrence
+     *
+     * @param words
+     * @param candidate
+     */
     private void addWordsToCandidate(HashMap<String, Integer> words, Candidate candidate) {
         Iterator it = words.entrySet().iterator();
         while (it.hasNext()) {
@@ -238,6 +252,10 @@ public class CandidateService {
         }
     }
 
+    /**
+     * @param word
+     * @return null if its a stop word or not valid word
+     */
     private Object getWordCategory(String word) {
         Optional<Skill> skill = skillRepository.findByName(word);
         if (skill.isPresent()) {
@@ -263,7 +281,7 @@ public class CandidateService {
         if (stopWord.isPresent()) {
             return null;
         }
-        if (!textProcessor.validWord(word)) {
+        if (!fileStorage.validWord(word)) {
             return null;
         }
         Skill s = new Skill();
@@ -322,14 +340,8 @@ public class CandidateService {
             throw new EntityNotFoundException("candidate with id " + id + " not found");
         }
         candidateRepository.deleteById(id);
-        deleteFile(candidate.get().getFileName());
+        fileStorage.deleteFile(candidate.get().getFileName());
     }
 
-    private void deleteFile(String fileName) {
-        try {
-            Files.delete(this.fileStorageLocation.resolve(fileName).normalize());
-        } catch (IOException e) {
-            throw new NotFoundException("file not found to delete it");
-        }
-    }
+
 }

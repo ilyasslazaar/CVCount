@@ -60,9 +60,6 @@ public class Candidate implements Serializable {
     @Transient
     private Integer score;
 
-    @Transient
-    private Integer totalSkillsCount;
-
     public List<Keyword> getKeywords() {
         return keywords;
     }
@@ -74,14 +71,7 @@ public class Candidate implements Serializable {
     @Transient
     private List<Keyword> keywords;
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
-    public void setTotalSkillsCount(Integer totalSkillsCount) {
-        this.totalSkillsCount = totalSkillsCount;
-    }
-
-    public Integer getTotalSkillsCount() {
-        return totalSkillsCount;
-    }
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove }
     public Integer getScore() {
         return score;
     }
@@ -139,14 +129,6 @@ public class Candidate implements Serializable {
     }
 
     public Set<CandidateSkill> getCandidateSkills() {
-        this.totalSkillsCount = 0;
-        /*for(CandidateSkill candidateSkill:
-            this.candidateSkills) {
-            if(candidateSkill.getSkill().getCategory().getName().equals("other")) {
-                continue;
-            }
-            this.totalSkillsCount++;
-        }*/
         return candidateSkills;
     }
 
@@ -269,9 +251,6 @@ public class Candidate implements Serializable {
                     continue outerloop;
                 }
             }
-        }
-        if(this.score != 0 && this.totalSkillsCount != null) {
-            this.score += this.totalSkillsCount;
         }
     }
 

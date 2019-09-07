@@ -26,4 +26,5 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long> {
     @Query("select candidate from Candidate candidate left join fetch candidate.cities left join fetch candidate.schools where candidate.id =:id")
     Optional<Candidate> findOneWithEagerRelationships(@Param("id") Long id);
 
+    List<Candidate> getCandidateByRejected(boolean rejected);
 }

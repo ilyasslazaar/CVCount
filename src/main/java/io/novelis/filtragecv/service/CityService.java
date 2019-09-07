@@ -42,6 +42,8 @@ public class CityService {
 
     /**
      * Save a city.
+     * if a skill exist with that same name the city get added to the candidates that have that skill
+     * if that skill has an unknown category it gets deleted
      *
      * @param cityDTO the entity to save.
      * @return the persisted entity.
@@ -59,6 +61,13 @@ public class CityService {
         }
         return cityMapper.toDto(city);
     }
+
+    /**
+     * add the city to all the candidate that have that skill
+     *
+     * @param skill
+     * @param city
+     */
     private void addCityToCandidates(Skill skill, City city) {
         Set<CandidateSkill> candidateSkills = skill.getCandidateSkills();
         for (CandidateSkill candidateSkill : candidateSkills) {

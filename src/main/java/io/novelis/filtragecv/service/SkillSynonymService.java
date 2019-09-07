@@ -49,32 +49,39 @@ public class SkillSynonymService {
     }
 
     /**
-     * Save a skillSynonym.
+     * Save a skillSynonym and deletes it if it exists in the skill table.
      *
      * @param skillSynonymDTO the entity to save.
+     * @throws BadRequestException if the name of the stopWord equals the name of a skill with a known category
      * @return the persisted entity.
      */
     public SkillSynonymDTO save(SkillSynonymDTO skillSynonymDTO) {
         log.debug("Request to save SkillSynonym : {}", skillSynonymDTO);
         SkillSynonym skillSynonym = skillSynonymMapper.toEntity(skillSynonymDTO);
-        Optional<Skill> existingSkill = skillRepository.findByName(skillSynonym.getName());
-        if (existingSkill.isPresent()) {
-            if (!existingSkill.get().getCategory().getName().equals("other")) {
+        Optional<Skill> skill = skillRepository.findByName(skillSynonym.getName());
+        if (skill.isPresent()) {
+            if (!skill.get().getCategory().getName().equals("other")) {
                 throw new BadRequestException("cant add skill synonym " + skillSynonym.getName() + " because there is already a skill with a known category with that same name");
             }
-            addSkillSynonymToCandidates(existingSkill.get(), skillSynonym.getSkill());
-            skillRepository.deleteByName(existingSkill.get().getName());
+            addSkillSynonymToCandidates(skill.get(), skillSynonym.getSkill());
+            skillRepository.deleteByName(skill.get().getName());
         }
         skillSynonym = skillSynonymRepository.save(skillSynonym);
         return skillSynonymMapper.toDto(skillSynonym);
     }
 
+    /**
+     * 
+     *
+     * @param skillSynonym
+     * @param skill
+     */
     private void addSkillSynonymToCandidates(Skill skillSynonym, Skill skill) {
         Set<CandidateSkill> candidateSkills = skillSynonym.getCandidateSkills();
         for (CandidateSkill candidateSkill :
             candidateSkills) {
             Optional<CandidateSkill> c = candidateSkillRepository.findCandidateSkillBySkillAndCandidate(skill, candidateSkill.getCandidate());
-            if(c.isPresent()) {
+            if (c.isPresent()) {
                 c.get().setCount(c.get().getCount() + candidateSkill.getCount());
             } else {
                 candidateSkill.getCandidate().addSkill(skill, 1);

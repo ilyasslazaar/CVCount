@@ -47,25 +47,6 @@ public class CandidateResource {
         this.candidateService = candidateService;
     }
 
-    /*
-        /**
-         * {@code POST  /candidates} : Create a new candidate.
-         *
-         * @param candidateDTO the candidateDTO to create.
-         * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new candidateDTO, or with status {@code 400 (Bad Request)} if the candidate has already an ID.
-         * @throws URISyntaxException if the Location URI syntax is incorrect.
-         */
-   /* @PostMapping("/candidates")
-    public ResponseEntity<CandidateDTO> createCandidate(@Valid @RequestBody CandidateDTO candidateDTO) throws URISyntaxException {
-        log.debug("REST request to save Candidate : {}", candidateDTO);
-        if (candidateDTO.getId() != null) {
-            throw new BadRequestAlertException("A new candidate cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        CandidateDTO result = candidateService.save(candidateDTO);
-        return ResponseEntity.created(new URI("/api/candidates/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
-    }*/
     @PostMapping("/candidates")
     public ResponseEntity<CandidateDTO> createCandidate(@RequestParam("file") MultipartFile cv, @RequestParam("func_id") int id) throws URISyntaxException {
         CandidateDTO result = candidateService.save(cv, id);
@@ -77,22 +58,22 @@ public class CandidateResource {
     /**
      * {@code PUT  /candidates} : Updates an existing candidate.
      *
-     * @param candidateDTO the candidateDTO to update.
+     * //@param candidateDTO the candidateDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated candidateDTO,
      * or with status {@code 400 (Bad Request)} if the candidateDTO is not valid,
      * or with status {@code 500 (Internal Server Error)} if the candidateDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/candidates")
-    public ResponseEntity<CandidateDTO> updateCandidate(@Valid @RequestBody CandidateDTO candidateDTO) throws URISyntaxException {
-        log.debug("REST request to update Candidate : {}", candidateDTO);
-        if (candidateDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        CandidateDTO result = candidateService.save(candidateDTO);
+    public ResponseEntity<CandidateDTO> updateCandidate(@RequestParam(required = true, name = "id") Long id,
+                                                        @RequestParam(required = false, name = "file") MultipartFile cv,
+                                                        @RequestParam(required = false, defaultValue = "", name = "func_id") Integer func_id,
+                                                        @RequestParam(required = false, name = "rejected") Boolean rejected) throws URISyntaxException {
+        System.out.println(id + ", " + cv + ", " + func_id + ", " + rejected);
+        CandidateDTO candidateDTO = candidateService.update(id, cv, func_id, rejected);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, candidateDTO.getId().toString()))
-            .body(result);
+            .body(candidateDTO);
     }
 
     /**
@@ -101,18 +82,10 @@ public class CandidateResource {
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of candidates in body.
      */
-  /*  @GetMapping("/candidates")
-    public List<CandidateDTO> getAllCandidates(@RequestParam(required = false, defaultValue = "false") boolean eagerload) {
-        log.debug("REST request to get all Candidates");
-        return candidateService.findAll();
-    }*/
-
     @GetMapping("/candidates")
     public List<CandidateDTO> getCandidates(@RequestParam(required = false, defaultValue = "false") boolean eagerload,
-                                                  @RequestParam(required = false, defaultValue = "") List<String> keywords,
-                                                  @RequestParam(required = false, defaultValue = "") List<Integer> priorities) {
-        log.debug("REST request to get all Candidates");
-
+                                            @RequestParam(required = false, defaultValue = "") List<String> keywords,
+                                            @RequestParam(required = false, defaultValue = "") List<Integer> priorities) {
         return candidateService.getCandidates(keywords, priorities);
     }
 
@@ -131,6 +104,7 @@ public class CandidateResource {
         }
         return ResponseUtil.wrapOrNotFound(candidateDTO);
     }
+
     @GetMapping("/candidates/{id}/skills")
     public List<SkillDTO> getCandidateSkills(@PathVariable Long id) {
         log.debug("REST request to get Candidate : {}", id);
@@ -145,7 +119,7 @@ public class CandidateResource {
             throw new EntityNotFoundException("candidate with id: " + id + " not found");
         }
         String fileName = candidateDTO.get().getFileName();
-        Resource resource = candidateService.loadFileAsResource(fileName);
+        Resource resource = candidateService.getCandidateFile(fileName);
         // Try to determine file's content type
         String contentType = null;
         try {

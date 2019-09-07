@@ -12,21 +12,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class ApplicationProperties {
     private String uploadDir;
 
-    private String tessDataDir;
-
     public String getUploadDir() {
         return uploadDir;
     }
 
     public void setUploadDir(String uploadDir) {
         this.uploadDir = uploadDir;
-    }
-
-    public String getTessDataDir() {
-        return tessDataDir;
-    }
-
-    public void setTessDataDir(String tessDataDir) {
-        this.tessDataDir = tessDataDir;
     }
 }

@@ -166,3 +166,6 @@ jhipster:
 # ===================================================================
 
 # application:
+application:
+  upload-dir: uploads
+  tess-data-dir: tessdata
